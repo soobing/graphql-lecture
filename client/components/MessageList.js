@@ -1,22 +1,32 @@
-import { useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { useRouter } from 'next/router';
 import MessageItem from "./MessageItem";
 import MessageInput from './MessageInput';
 
 import fetcher from '../fetcher';
+import useInfiniteScroll from '../hooks/useInfiniteScroll';
 
 const MessageList = () => {
   const { query: { userID = '' } } = useRouter();
   const [messages, setMessages] = useState([]);
+  const [hasNext, setHasNext] = useState(true);
+
   const [editID, setEditID] = useState(null);
+  const moreEl = useRef(null);
+  const intersecting = useInfiniteScroll(moreEl);
+
 
   useEffect(() => {
-    getMessages();
-  }, [])
+    intersecting && hasNext && getMessages();
+  }, [intersecting])
 
   const getMessages = async () => {
-    const messages = await fetcher('get', '/messages');
-    setMessages(messages)
+    const newMessages = await fetcher('get', '/messages', { params: { cursor: messages[messages.length - 1]?.id ?? '' } });
+    if (newMessages.length === 0) {
+      setHasNext(false);
+      return;
+    }
+    setMessages((messages) => [...messages, ...newMessages])
   }
 
   const onCreate = async text => {
@@ -53,12 +63,13 @@ const MessageList = () => {
 
   return (
     <>
-      <MessageInput mutate={onCreate} />
+      {userID && <MessageInput mutate={onCreate} />}
       <ul className="messages">
         {
           messages.map(x => <MessageItem key={x.id} onClickEdit={(id) => setEditID(x.id)} onUpdate={onUpdate} edit={x.id === editID} onDelete={() => onDelete(x.id)} myID={userID} {...x} />)
         }
       </ul>
+      <div ref={moreEl}></div>
     </>
   )
 
