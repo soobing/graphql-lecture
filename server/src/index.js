@@ -15,6 +15,7 @@ app.use(cors({
 messagesRoute.forEach(({ method, route, handler }) => {
   app[method](route, handler);
 })
+
 usersRoute.forEach(({ method, route, handler }) => {
   app[method](route, handler);
 })

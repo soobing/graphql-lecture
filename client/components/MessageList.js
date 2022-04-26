@@ -1,38 +1,49 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/router';
 import MessageItem from "./MessageItem";
 import MessageInput from './MessageInput';
 
+import fetcher from '../fetcher';
+
 const MessageList = () => {
-  const [messages, setMessages] = useState([...Array(50)].map((_, i) => ({ id: i + 1, userID: `id_${i}`, timestamp: 1234567890123 + i * 1000 * 60, text: `${i + 1} mock test` })));
+  const { query: { userID = '' } } = useRouter();
+  const [messages, setMessages] = useState([]);
   const [editID, setEditID] = useState(null);
 
-  const onCreate = text => {
-    const newMessage = {
-      id: messages.length + 1,
-      userID: `id_${messages.length + 1}`,
-      timestamp: Date.now(),
-      text: `${messages.length + 1} 추가한 데이터: ${text}`
-    }
-    setMessages([newMessage, ...messages])
+  useEffect(() => {
+    getMessages();
+  }, [])
+
+  const getMessages = async () => {
+    const messages = await fetcher('get', '/messages');
+    setMessages(messages)
   }
 
-  const onUpdate = (text, id) => {
+  const onCreate = async text => {
+    const newMessage = await fetcher('post', '/messages', { text, userID })
+    if (!newMessage) return;
+
+    setMessages(newMessage)
+  }
+
+  const onUpdate = async (text, id) => {
+    const newMessage = await fetcher('put', `/messages/${id}`, { text, userID })
+    if (!newMessage) return;
     setMessages(messages => {
-      const targetIndex = messages.findIndex(msg => msg.userID === id);
+      const targetIndex = messages.findIndex(msg => msg.id === id);
       if (targetIndex < 0) return messages;
       const newMessages = [...messages];
-      newMessages.splice(targetIndex, 1, {
-        ...newMessages[targetIndex],
-        text
-      })
+      newMessages.splice(targetIndex, 1, newMessage)
       return newMessages;
     });
     setEditID(null)
   }
 
-  const onDelete = (id) => {
+  const onDelete = async (id) => {
+    const deletedId = await fetcher('delete', `/messages/${id}`, { params: { userID } })
+
     setMessages(messages => {
-      const targetIndex = messages.findIndex(msg => msg.userID === id);
+      const targetIndex = messages.findIndex(msg => msg.id === String(deletedId));
       if (targetIndex < 0) return messages;
       const newMessages = [...messages];
       newMessages.splice(targetIndex, 1)
@@ -45,7 +56,7 @@ const MessageList = () => {
       <MessageInput mutate={onCreate} />
       <ul className="messages">
         {
-          messages.map(x => <MessageItem key={x.id} onClickEdit={(id) => setEditID(x.userID)} onUpdate={onUpdate} edit={x.userID === editID} onDelete={() => onDelete(x.userID)} {...x} />)
+          messages.map(x => <MessageItem key={x.id} onClickEdit={(id) => setEditID(x.id)} onUpdate={onUpdate} edit={x.id === editID} onDelete={() => onDelete(x.id)} myID={userID} {...x} />)
         }
       </ul>
     </>

@@ -1,6 +1,6 @@
 import MessageInput from "./MessageInput";
 
-const MessageItem = ({ userID, timestamp, text, onUpdate, edit, onClickEdit, onDelete }) => (
+const MessageItem = ({ id, myID, userID, timestamp, text, onUpdate, edit, onClickEdit, onDelete }) => (
   <li className="messages__item">
     <h3>{userID}{' '}
       <sub>
@@ -14,13 +14,14 @@ const MessageItem = ({ userID, timestamp, text, onUpdate, edit, onClickEdit, onD
         })}
       </sub></h3>
     {
-      edit ? <MessageInput mutate={onUpdate} id={userID} text={text} /> : text
+      edit ? <MessageInput mutate={onUpdate} id={id} text={text} /> : text
     }
-    <div className="messages__buttons">
+    {
+      myID === userID && <div className="messages__buttons">
       <button onClick={onClickEdit}>수정</button>
-      <button onClick={onDelete}>삭제</button>
-
-    </div>
+        <button onClick={onDelete}>삭제</button>
+      </div>
+    }
   </li>
 )
 
