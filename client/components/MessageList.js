@@ -6,9 +6,9 @@ import MessageInput from './MessageInput';
 import fetcher from '../fetcher';
 import useInfiniteScroll from '../hooks/useInfiniteScroll';
 
-const MessageList = () => {
+const MessageList = ({ defaultMessages }) => {
   const { query: { userID = '' } } = useRouter();
-  const [messages, setMessages] = useState([]);
+  const [messages, setMessages] = useState(defaultMessages);
   const [hasNext, setHasNext] = useState(true);
 
   const [editID, setEditID] = useState(null);
