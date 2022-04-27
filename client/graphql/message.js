@@ -1,5 +1,4 @@
-// import gql from 'graphql-tag';
-import { gql } from 'graphql-request';
+import gql from 'graphql-tag';
 
 export const GET_MESSAGES = gql`
   query GET_MESSAGES {
