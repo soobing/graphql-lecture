@@ -5,8 +5,11 @@
   "main": "index.js",
   "license": "MIT",
   "dependencies": {
+    "apollo-server": "^3.6.7",
+    "apollo-server-express": "^3.6.7",
     "cors": "^2.8.5",
     "express": "^4.17.3",
+    "graphql": "^16.4.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
