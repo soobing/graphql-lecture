@@ -17,7 +17,7 @@ const MessageList = ({ defaultMessages }) => {
 
   const { data, error, isError } = useQuery(QueryKeys.MESSAGES, () => fetcher(GET_MESSAGES));
 
-  const { mutate: onCreate } = useMutation(({ text }) => fetcher(CREATE_MESSAGE, { text, userID }, {
+  const { mutate: onCreate } = useMutation(({ text }) => fetcher(CREATE_MESSAGE, { text, userID }), {
     onSuccess: ({ createMessage }) => {
       client.setQueryData(QueryKeys.MESSAGES, old => {
         return {
@@ -25,7 +25,7 @@ const MessageList = ({ defaultMessages }) => {
         }
       })
     }
-  }))
+  })
 
   const { mutate: onUpdate } = useMutation(({ text, id }) => fetcher(UPDATE_MESSAGE, { text, id, userID }), {
     onSuccess: ({ updateMessage }) => {
@@ -42,7 +42,7 @@ const MessageList = ({ defaultMessages }) => {
   })
 
   const { mutate: onDelete } = useMutation(id => fetcher(DELETE_MESSAGE, { id, userID }), {
-    onSuccess: ({ deletedMessage: deletedID }) => {
+    onSuccess: ({ deleteMessage: deletedID }) => {
       client.setQueryData(QueryKeys.MESSAGES, old => {
         const targetIndex = old.messages.findIndex(message => message.id === deletedID);
         if (targetIndex < 0) return old;
