@@ -1,5 +1,4 @@
-// import gql from 'graphql-tag';
-import { gql } from 'graphql-request';
+import gql from 'graphql-tag';
 
 export const GET_USERS = gql`
   query GET_USERS {
