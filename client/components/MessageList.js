@@ -3,10 +3,11 @@ import { useRouter } from 'next/router';
 import MessageItem from "./MessageItem";
 import MessageInput from './MessageInput';
 
-import fetcher from '../fetcher';
+import { fetcher } from '../queryClient';
 import useInfiniteScroll from '../hooks/useInfiniteScroll';
 
 const MessageList = ({ defaultMessages }) => {
+  return null;
   const { query: { userID = '' } } = useRouter();
   const [messages, setMessages] = useState(defaultMessages);
   const [hasNext, setHasNext] = useState(true);
