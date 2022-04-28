@@ -6,8 +6,7 @@ import './index.scss';
 const App = ({ Component, pageProps }) => {
   const clientRef = useRef(null);
   const getClient = () => {
-    if (clientRef.current) return;
-    clientRef.current = new QueryClient({
+    if (!clientRef.current) clientRef.current = new QueryClient({
       defaultOptions: {
         queries: {
           refetchOnWindowFocus: false,
